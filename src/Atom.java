@@ -13,10 +13,10 @@ public class Atom {
   @Override
   public String toString() {
     switch(operation){
-      case JMP -> { return "(" + operation + ", " + destination + ")"; }
+      case JMP -> { return "(" + operation + ", , , ," + destination + ")"; }
       case NEG -> { return "(" + operation + ", " + left + ", , " + result + ")"; }
-      case LBL -> { return "(" + operation + ", " + destination + ")"; }
-      case TST -> { return "(" + operation + ", " + left + ", " + right + ", " + destination + ", " + checkComparator() + ")"; }
+      case LBL -> { return "(" + operation + ", , , ," + destination + ")"; }
+      case TST -> { return "(" + operation + ", " + left + ", " + right + ", " + result + ", " + checkComparator() + ", " + destination + ")"; }
       default -> { return "(" + operation + ", " + left + ", " + right + ", " + result + ")"; }
     }
   }

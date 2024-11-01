@@ -43,7 +43,7 @@ public class Parser extends Token{
 
   // Helper method to accept a token with it's value and advance to next token
   private static boolean accept(Token.TokenType type, String value){
-    if(getCurrentToken().type == type && getCurrentToken().value.equals(value)){
+    if(getCurrentToken().type.equals(type) && getCurrentToken().value.equals(value)){
       advance();
       return true;
     } else
@@ -126,11 +126,11 @@ public class Parser extends Token{
         openParen--;
       else {
         switch(type){
-          case "condition" -> parseCondition(); 
+          case "condition" -> parseCondition(0); 
           case "expression" -> parseExpression(); 
           case "for" -> {
               parseInitialization();
-              parseCondition();
+              parseCondition(0);
               expect(TokenType.SEMICOLON, ";");
               parseUpdate();
           }   
@@ -195,6 +195,8 @@ private static boolean isOperator(Token token) {
 
   // Parse program is the highest level of abstraction, it will parse the entire program ~ Brandon
   private static void parseProgram(){
+    for(Atom atom : atoms)
+      System.out.println(atom.toString());
     parseStatement();
     if(hasMoreTokens())
       parseProgram();
@@ -242,14 +244,14 @@ private static boolean isOperator(Token token) {
 
   // Method to parse expressions ~ Creek
   private static void parseExpression(){
-    if(peek().type.equals(TokenType.OPERATOR) && (peek().value.equals("=") || peek().value.equals("+=") || peek().value.equals("-="))){
+    if(getCurrentToken().value.equals("=") || getCurrentToken().value.equals("+=") || getCurrentToken().value.equals("-=")){
       parseAssignment();
-    } else if(peek().type.equals(TokenType.OPERATOR) && (peek().value.equals("++") || peek().value.equals("--"))){
+    } else if(getCurrentToken().type.equals(TokenType.OPERATOR) && (getCurrentToken().value.equals("++") || getCurrentToken().value.equals("--"))){
       parseUpdate();
     } else {
-      if(peek().getTokenType().equals(TokenType.OPERATOR))
+      if(getCurrentToken().getTokenType().equals(TokenType.OPERATOR))
         parseOperator();
-      if(peek().getTokenType().equals(TokenType.OPEN_PARENTHESIS)){
+      if(getCurrentToken().getTokenType().equals(TokenType.OPEN_PARENTHESIS)){
         parseParenthesis("expression");
       } else
         parseOperand();
@@ -310,55 +312,41 @@ private static boolean isOperator(Token token) {
     atoms.add(init);
   }
 
-
-  /*
-   * 
-   * 
-   */
   // Method to parse conditional statements - Tucker
-  private static String parseCondition(){
-
-    // case: [] < [] 
-    String left = parseOperand();
-    int cmp = getComparatorInteger(parseComparator());
-    String right = parseOperand();
+  private static String parseCondition(int recursion){
+      String left = parseOperand();
+      int cmp = getComparatorInteger(parseComparator());
+      String right = parseOperand();
         
       /*
        * need to track conditionals with LBLs so we know locations of conditions being compared in recursive calls
        */
     
-
-       //GUARD:
-//check if peek is in bounds
-    
-
-     //peek to check for next possible condition: && or ||
-      if (peek().getTokenType() == Token.TokenType.OPERATOR){
-        Atom temp = new Atom(Atom.Operation.TST, left, right, "t"+TEMP_INDEX++);
+      // peek to check for next possible condition: && or ||
+      if (getCurrentToken().type.equals(TokenType.OPERATOR) || recursion != 0){
+        Atom temp = new Atom(Atom.Operation.TST, left, right, "t" + TEMP_INDEX++);
         temp.setCMP(cmp);
-        if(accept(Token.TokenType.OPERATOR, "||"))
-          atoms.add(new Atom(Atom.Operation.NEG, temp.checkDestination(), temp.checkDestination()));
         atoms.add(temp);
 
-        expect(Token.TokenType.OPERATOR, "&&");
-      
-        atoms.add(new Atom(Atom.Operation.TST, temp.checkDestination(), parseCondition(), "LBL"+LABEL_INDEX, cmp));
-      } else 
+        // The OR case
+        if(accept(Token.TokenType.OPERATOR, "||")){
+          atoms.add(new Atom(Atom.Operation.NEG, temp.checkResult(), temp.checkResult()));
+          String rightCond = parseCondition(1);
+          atoms.add(new Atom(Atom.Operation.NEG, rightCond, rightCond));
+          atoms.add(new Atom(Atom.Operation.TST, temp.checkResult(), rightCond, "LBL"+LABEL_INDEX, 6)); // negation !(!x && !y) == x || y
+          return "";
+        // The AND case
+        } else if(accept(Token.TokenType.OPERATOR, "&&")){
+          atoms.add(new Atom(Atom.Operation.TST, temp.checkResult(), parseCondition(1), "LBL"+LABEL_INDEX, 1));
+        // Finished parsing, add the test atom
+        } else {
+          
+        }
+      } else
         atoms.add(new Atom(Atom.Operation.TST, left, right, "LBL"+LABEL_INDEX, cmp));
-
-      //create atom for Condition '&&' Condition comparison
   
-      return "";
+      return "t" + TEMP_INDEX;
     }
-  /*
-      x < y -> t1
-      z < j -> t2
-
-      1 && 2 -> t3
-
-     final (x < y && z < j && v < k) -> destination 3
-    */
- 
 
   // Method to parse comparators
   private static String parseComparator(){
