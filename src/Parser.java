@@ -1,8 +1,5 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Set;
-
-import javax.management.RuntimeErrorException;
 
 public class Parser extends Token{
   public static void main(String[] args) {
@@ -81,24 +78,43 @@ public class Parser extends Token{
 
   // Helper method to peek at the next token without advancing
   private static Token peek(){
-    return hasMoreTokens() ? tokens.get(currentIndex + 1) : null;
-  }
+    try {
+        if(hasMoreTokens())
+        {
+          tokens.get(currentIndex + 1);
+          return hasMoreTokens() ? tokens.get(currentIndex + 1) : null;
+
+        }
+    } catch (IndexOutOfBoundsException e) {
+      throw new Error("Missing brackets in conditional statement.");
+      
+    }
+        return null;
+    }
+
+  // private static Token peek(){
+  //   return hasMoreTokens() ? tokens.get(currentIndex + 1) : null;
+  // }
+
 
   // Helper method to parse brackets, keeping track of open brackets vs closed brackets
+ 
+
+
   private static void parseBrackets(){
     expect(TokenType.OPEN_BRACKET, "{");
     openBrackets++;
     while(openBrackets != 0){
-      if(accept(TokenType.OPEN_BRACKET)){
+      if(accept(TokenType.OPEN_BRACKET))
         openBrackets++;
-        parseProgram();
-      } else {
-        expect(TokenType.CLOSE_BRACKET);
+      else if(accept(TokenType.CLOSE_BRACKET))
         openBrackets--;
-      }
+      else 
+        parseProgram();
     }
   }
 
+  
   // Helper method for parsing parenthesis for conditionals/expressions
   private static void parseParenthesis(String type){
     expect(TokenType.OPEN_PARENTHESIS, "(");
@@ -192,12 +208,13 @@ private static boolean isOperator(Token token) {
       parseWhile();
     else if(accept(TokenType.KEYWORD, "for"))
       parseFor();
-    else if(getCurrentToken().getTokenType() == TokenType.KEYWORD && 
-    (getCurrentToken().value.equals("int") || getCurrentToken().value.equals("float"))){
+    else if( getCurrentToken().getTokenType() == TokenType.KEYWORD && (getCurrentToken().value.equals("int") || getCurrentToken().value.equals("float"))){
       parseInitialization();
     }else if(getCurrentToken().getTokenType().equals(TokenType.LITERAL) || getCurrentToken().getTokenType().equals(TokenType.IDENTIFIER)){
       parseExpression();
-    }else
+    }else if(accept(TokenType.CLOSE_BRACKET))
+      openBrackets--;
+    else
       throw new RuntimeException("Unexpected token: " + getCurrentToken().getTokenType() + " with value: " + getCurrentToken().value);
   }
 
@@ -310,6 +327,11 @@ private static boolean isOperator(Token token) {
        * need to track conditionals with LBLs so we know locations of conditions being compared in recursive calls
        */
     
+
+       //GUARD:
+//check if peek is in bounds
+    
+
      //peek to check for next possible condition: && or ||
       if (peek().getTokenType() == Token.TokenType.OPERATOR){
         Atom temp = new Atom(Atom.Operation.TST, left, right, "t"+TEMP_INDEX++);

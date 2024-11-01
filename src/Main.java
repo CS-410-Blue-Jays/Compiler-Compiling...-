@@ -7,7 +7,7 @@ public class Main {
   public static void main(String[] args){
     System.out.println("Enter the name of the file you'd like to tokenize: ");
 			// String path = System.console().readLine();
-			String path = "HelloWorld.txt"; // For testing purposes
+			String path = "src/HelloWorld.txt"; // For testing purposes
 			ArrayList<Token> tokens = new ArrayList<>(); // Its definitely used, quiet down compiler
 
 			File newFile = new File(path);
