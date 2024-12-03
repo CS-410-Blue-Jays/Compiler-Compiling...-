@@ -26,8 +26,8 @@ public class Code {
     }
 
     // Constructor for the CLR, ADD, SUB, MUL, DIV, LOD, STO instructions
-    public Code(Operation Operation, int Comparator, int Register, int Data){
-        this.operation = getOperation(Operation);
+    public Code(int Operation, int Comparator, int Register, int Data){
+        this.operation = Operation;
         this.compare = Comparator;
         this.reg = Register;
         this.data = addPadding(Data);

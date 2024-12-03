@@ -1,18 +1,4 @@
-int g = 4;
-while(g > 2){
-    if(9 < 9 || i < 10 && i > 3){
-        float i = 0;
-        i += 23;
-        for(float j = 10.0; j > 1; j--){
-            
-        }
-    }
-    g--;
-    for(int i = 0; i < input; i++){
-        float zb20 = 100;
-        zb20 = i * 2;
-        zb20++;
-        zb20 -= 2;
-    }
-    g--;
-}
+s = 5;
+s -= 3;
+m = 3;
+m -= 7;

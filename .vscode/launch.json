@@ -1,20 +1,27 @@
 {
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Parser",
-            "request": "launch",
-            "mainClass": "Parser",
-            "projectName": "Scanner"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "Scanner"
-        }
-    ]
+  "configurations": [
+    {
+      "type": "java",
+      "name": "CodeGen",
+      "request": "launch",
+      "mainClass": "CodeGen",
+      "projectName": "Scanner"
+    },
+    {
+      "type": "java",
+      "name": "Parser",
+      "request": "launch",
+      "mainClass": "Parser",
+      "projectName": "Scanner"
+    },
+    {
+      "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "Main",
+      "projectName": "Scanner"
+    }
+  ]
 } // {
 //     // Use IntelliSense to learn about possible attributes.
 //     // Hover to view descriptions of existing attributes.
