@@ -17,9 +17,11 @@ public class CodeGen {
         CodeGen.generate(testAtoms);
     }
 
-    static int currentIndex = 0; // Current place in atoms
+    static int currentAtom = 0; // Current place in atoms
+    static int currentRegister = 0; // Current register number
     static ArrayList<Code> code = new ArrayList<>(); // Return this
     static ArrayList<Atom> atoms = new ArrayList<>(); // Input
+    static ArrayList<String> vars = new ArrayList<>(); // Register numbers with variable names
 
     public static ArrayList<Code> generate(ArrayList<Atom> insertedAtoms) {
         atoms = insertedAtoms;
@@ -33,7 +35,7 @@ public class CodeGen {
     }
 
     public static boolean hasMoreAtoms(){
-        return currentIndex < atoms.size();
+        return currentAtom < atoms.size();
     }
 
     public static void parseAtom(){
@@ -54,11 +56,11 @@ public class CodeGen {
     }
 
     public static Atom getCurrentAtom(){
-        return atoms.get(currentIndex);
+        return atoms.get(currentAtom);
     }
 
     public static void advance(){
-        currentIndex++;
+        currentAtom++;
     }
 
     public static void parseADD(Atom current){
@@ -121,5 +123,22 @@ public class CodeGen {
         System.out.println("MOV detected");
         // Do things here
 
+    }
+
+    public static int parseReg(String reg){
+
+        // First, check if the variable name already has an associated register
+        if(vars.contains(reg) && !vars.isEmpty()){
+            return vars.indexOf(reg);
+        } else {
+            // If not, check if there are any available registers
+            for(int i = 1; i < 15; i++){
+                if(vars.get(i).equals("")){
+                    vars.set(i, reg);
+                    return i;
+                }
+            }
+            throw new RuntimeException("No available registers");
+        }
     }
 }
