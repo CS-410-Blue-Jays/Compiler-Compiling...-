@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CodeGen {
 
@@ -21,6 +22,9 @@ public class CodeGen {
     static ArrayList<Code> code = new ArrayList<>(); // Return this
     static ArrayList<Atom> atoms = new ArrayList<>(); // Input
     static ArrayList<String> vars = new ArrayList<>(); // Register numbers with variable names
+    
+    static int currLBL = 0;                                       //to track next avail instance of LBL
+    static HashMap<String,Integer> labelTable = new HashMap<>();  // Stores labels and values
 
     public static ArrayList<Code> generate(ArrayList<Atom> insertedAtoms) {
         atoms = insertedAtoms;
@@ -112,12 +116,17 @@ public class CodeGen {
     public static void parseLBL(Atom current){
 
         System.out.println("LBL detected");
-        // Do things here
+        
 
+        //get next available location
+        int location = 100; //arbitrary example
+        String label = "LBL" + currLBL++;
 
+        //need to create LBL(n) with Location(x) 
+        labelTable.put(label, location);
 
-        //need to create LBL(n) to Location(x) 
-        //need to add to label table
+        System.out.println("LABELTABLE NOW CONTAINS: " + label + labelTable.get(label)); //confirmation
+        
     }
 
     public static void parseTST(Atom current){
