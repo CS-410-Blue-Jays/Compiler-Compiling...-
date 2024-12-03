@@ -127,11 +127,16 @@ public class CodeGen {
 
     }
 
+    //Luke
     public static void parseLBL(Atom current){
 
         System.out.println("LBL detected");
         // Do things here
 
+
+
+        //need to create LBL(n) to Location(x) 
+        //need to add to label table
     }
 
     public static void parseTST(Atom current){
