@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CodeGen {
 
@@ -19,25 +18,14 @@ public class CodeGen {
     }
 
     static int currentAtom = 0; // Current place in atoms
-    static int currentRegister = 0; // Current register number
     static ArrayList<Code> code = new ArrayList<>(); // Return this
     static ArrayList<Atom> atoms = new ArrayList<>(); // Input
-    static int register = 0; // Register Starting at 0
-    static HashMap<String, String> variableRegisterMap = new HashMap<>();
+    static ArrayList<String> vars = new ArrayList<>(); // Register numbers with variable names
 
     public static ArrayList<Code> generate(ArrayList<Atom> insertedAtoms) {
         atoms = insertedAtoms;
         parseCode();
         return code;
-    }
-    public static String getOrAssignRegister(String variable) {
-        if (variableRegisterMap.containsKey(variable)) {
-            return variableRegisterMap.get(variable);
-        } else {
-            String newRegister = String.format("%05d", register++);
-            variableRegisterMap.put(variable, newRegister);
-            return newRegister;
-        }
     }
 
     public static void parseCode(){
@@ -48,7 +36,6 @@ public class CodeGen {
     public static boolean hasMoreAtoms(){
         return currentAtom < atoms.size();
     }
-
 
     public static void parseAtom(){
         Atom curr = getCurrentAtom();
@@ -66,9 +53,7 @@ public class CodeGen {
         }
         advance(); // Move to the next atom
     }
-    public static int allocateRegister(int operand){
-        return register++;
-    }
+
     public static Atom getCurrentAtom(){
         return atoms.get(currentAtom);
     }
@@ -84,26 +69,22 @@ public class CodeGen {
 
     }
 
-    public static void parseSUB(Atom current) {
-        System.out.println("SUB detected");
-        String leftRegister = getOrAssignRegister(current.checkLeft());
-        String resultRegister = getOrAssignRegister(current.checkResult());
+    public static void parseSUB(Atom current) { // ~ Steven
+
         int operation = Code.Operation.SUB.ordinal();
-        Code newInstruction = new Code(operation, 0, Integer.parseInt(resultRegister), Integer.parseInt(leftRegister));
+        int reg = parseReg(current.checkResult());
+        int data = parseReg(current.checkRight());
+        Code newInstruction = new Code(operation, 0, reg, data);
         code.add(newInstruction);
     }
 
     public static void parseMUL(Atom current){ // ~ Steven
 
-        System.out.println("MUL detected"); // Testing Purposes
         int operation = Code.Operation.MUL.ordinal();
-        int mode = 0;
-        int r = Integer.parseInt(current.checkResult());
-        int a = Integer.parseInt(current.checkLeft());
-        Code newInstruction = new Code(operation, mode, r, a);
-        code.add(newInstruction);
-        
-
+        int reg = parseReg(current.checkResult());
+        int data = parseReg(current.checkRight());
+        Code newInstruction = new Code(operation, 0, reg, data);
+        code.add(newInstruction);        
     }
 
     public static void parseDIV(Atom current){
@@ -154,18 +135,19 @@ public class CodeGen {
     }
 
     public static int parseReg(String reg){
+        // First, check if it is a variable or a literal
+        try {
+            return Integer.parseInt(reg);
+        } catch (NumberFormatException e) {}
 
-        // First, check if the variable name already has an associated register
-        if(vars.contains(reg) && !vars.isEmpty()){
+        // Second, check if the variable name already has an associated register
+        if(vars.contains(reg)){
+            return vars.indexOf(reg);
+        } else if (vars.size() != 15){
+            vars.add(reg);
             return vars.indexOf(reg);
         } else {
             // If not, check if there are any available registers
-            for(int i = 1; i < 15; i++){
-                if(vars.get(i).equals("")){
-                    vars.set(i, reg);
-                    return i;
-                }
-            }
             throw new RuntimeException("No available registers");
         }
     }

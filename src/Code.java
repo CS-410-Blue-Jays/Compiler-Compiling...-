@@ -22,7 +22,7 @@ public class Code {
     // Need to return a string representation of the Code object
     @Override
     public String toString() {
-        return operation + "" + compare + "" + Integer.toHexString(reg) + "" + data;
+        return operation + "" + compare + "" + Integer.toHexString(reg)+ "" + addPadding(data);
     }
 
     // Constructor for the CLR, ADD, SUB, MUL, DIV, LOD, STO instructions
@@ -30,14 +30,14 @@ public class Code {
         this.operation = Operation;
         this.compare = Comparator;
         this.reg = Register;
-        this.data = addPadding(Data);
+        this.data = Data;
     }
 
     // Constructor for the JMP instruction
     public Code(Operation Instruction, int Data){
         this.operation = getOperation(Instruction);
         this.compare = this.reg = 0; // No compare or register to store
-        this.data = addPadding(Data); 
+        this.data = Data; 
     }
 
     // Constructor for the HLT instruction
@@ -65,7 +65,7 @@ public class Code {
     }
 
     // Add left-padding to the data until it has 5 places
-    public final int addPadding(int num){
-        return Integer.parseInt(String.format("%05d", num));
+    public final String addPadding(int num){
+        return String.format("%05d", num);
     }
 }
