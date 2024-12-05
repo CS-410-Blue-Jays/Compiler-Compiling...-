@@ -24,10 +24,10 @@ public class CodeGen {
     static ArrayList<String> vars = new ArrayList<>(); // Register numbers with variable names
 
     //program counter with values 100, 104, etc, incremented for each instruction minus lbl jmp, ?
-    static ArrayList<Integer> programCounter = new ArrayList<>();
+    static int programCounter = 0;
     
     static int currLBL = 0;                                       //to track next avail instance of LBL
-    static HashMap<String,Integer> labelTable = new HashMap<>();  // Stores labels and values
+    static HashMap<String,String> labelTable = new HashMap<>();  // Stores labels and values
 
     public static ArrayList<Code> generate(ArrayList<Atom> insertedAtoms) {
         atoms = insertedAtoms;
@@ -70,6 +70,7 @@ public class CodeGen {
     }
 
     public static void parseADD(Atom current){ // ~ Brandon
+        programCounter ++;
         int data = parseReg(current.checkRight());
         int reg = parseReg(current.checkResult());
         Code newInstruction = new Code(Code.Operation.ADD.ordinal(), reg, data);
@@ -77,6 +78,8 @@ public class CodeGen {
     }
 
     public static void parseSUB(Atom current) { // ~ Steven
+        programCounter ++;
+
         int data = parseReg(current.checkRight());
         int reg = parseReg(current.checkResult());
         Code newInstruction = new Code(Code.Operation.SUB.ordinal(), reg, data);
@@ -84,6 +87,8 @@ public class CodeGen {
     }
 
     public static void parseMUL(Atom current){ // ~ Steven
+        programCounter ++;
+
         int data = parseReg(current.checkRight());
         int reg = parseReg(current.checkResult());
         Code newInstruction = new Code(Code.Operation.MUL.ordinal(), reg, data);
@@ -91,6 +96,8 @@ public class CodeGen {
     }
 
     public static void parseDIV(Atom current){ // ~ Tucker
+        programCounter ++;
+
         int data = parseReg(current.checkRight());
         int reg = parseReg(current.checkResult());
         Code newInstruction = new Code(Code.Operation.DIV.ordinal(), reg, data);
@@ -103,24 +110,21 @@ public class CodeGen {
         code.add(newInstruction);
     }
 
-    //Luke
-    public static void parseLBL(Atom current){
-
-        System.out.println("LBL detected");
-        
+    public static void parseLBL(Atom current){ // ~ Luke
 
         //get next available location
-        int location = 100; //arbitrary example, need to make global and increment for each instruction
         String label = "LBL" + currLBL++;
+        String location = Integer.toBinaryString(programCounter ); // does not increment, holds place for next instruction
 
-        //need to create LBL(n) with Location(x) 
         labelTable.put(label, location);
 
-        System.out.println("LABELTABLE NOW CONTAINS: " + label + ", " + labelTable.get(label)); //confirmation
+        System.out.println("Updated Label Table: " + label + " at location: " + labelTable.get(label)); //confirmation
         
     }
 
     public static void parseTST(Atom current){
+        programCounter ++;
+
         int data = parseReg(current.checkRight());
         int cmp = parseReg(current.checkComparator());
         int reg = parseReg(current.checkResult());
@@ -131,6 +135,8 @@ public class CodeGen {
     }
 
     public static void parseMOV(Atom current){ // ~ Brandon
+        programCounter ++;
+
         int data = parseReg(current.checkRight());
         int reg = parseReg(current.checkResult());
         Code newInstruction = new Code(Code.Operation.LOD.ordinal(), reg, data);
@@ -138,6 +144,7 @@ public class CodeGen {
     }
 
     public static int parseReg(String reg){
+
         // First, check if it is a variable or a literal
         try {
             return Integer.parseInt(reg);
