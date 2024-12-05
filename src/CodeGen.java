@@ -38,6 +38,7 @@ public class CodeGen {
     public static void parseCode(){
         while(hasMoreAtoms())
             parseAtom();
+        code.add(new Code(Code.Operation.HLT.ordinal())); // Add the HALT instruction at the end
     }
 
     public static boolean hasMoreAtoms(){
@@ -52,7 +53,6 @@ public class CodeGen {
             case "MUL" -> parseMUL(curr);
             case "DIV" -> parseDIV(curr);
             case "JMP" -> parseJMP(curr);
-            case "NEG" -> parseNEG(curr);
             case "LBL" -> parseLBL(curr);
             case "TST" -> parseTST(curr);
             case "MOV" -> parseMOV(curr);
@@ -69,50 +69,38 @@ public class CodeGen {
         currentAtom++;
     }
 
-    public static void parseADD(Atom current){
-
-        System.out.println("ADD detected");
-        // Do things here
-
+    public static void parseADD(Atom current){ // ~ Brandon
+        int data = parseReg(current.checkRight());
+        int reg = parseReg(current.checkResult());
+        Code newInstruction = new Code(Code.Operation.ADD.ordinal(), reg, data);
+        code.add(newInstruction);
     }
 
     public static void parseSUB(Atom current) { // ~ Steven
-
-        int operation = Code.Operation.SUB.ordinal();
-        int reg = parseReg(current.checkResult());
         int data = parseReg(current.checkRight());
-        Code newInstruction = new Code(operation, 0, reg, data);
+        int reg = parseReg(current.checkResult());
+        Code newInstruction = new Code(Code.Operation.SUB.ordinal(), reg, data);
         code.add(newInstruction);
     }
 
     public static void parseMUL(Atom current){ // ~ Steven
-
-        int operation = Code.Operation.MUL.ordinal();
-        int reg = parseReg(current.checkResult());
         int data = parseReg(current.checkRight());
-        Code newInstruction = new Code(operation, 0, reg, data);
+        int reg = parseReg(current.checkResult());
+        Code newInstruction = new Code(Code.Operation.MUL.ordinal(), reg, data);
         code.add(newInstruction);        
     }
 
-    public static void parseDIV(Atom current){
-
-        System.out.println("DIV detected");
-        // Do things here
-
+    public static void parseDIV(Atom current){ // ~ Tucker
+        int data = parseReg(current.checkRight());
+        int reg = parseReg(current.checkResult());
+        Code newInstruction = new Code(Code.Operation.DIV.ordinal(), reg, data);
+        code.add(newInstruction);
     }
 
     public static void parseJMP(Atom current){
-
-        System.out.println("JMP detected");
-        // Do things here
-
-    }
-
-    public static void parseNEG(Atom current){
-
-        System.out.println("NEG detected");
-        // Do things here
-
+        int data = parseReg(current.checkRight()); // Destination
+        Code newInstruction = new Code(Code.Operation.JMP.ordinal(), data); // Make the instruction
+        code.add(newInstruction);
     }
 
     //Luke
@@ -133,17 +121,20 @@ public class CodeGen {
     }
 
     public static void parseTST(Atom current){
-
-        System.out.println("TST detected");
-        // Do things here
+        int data = parseReg(current.checkRight());
+        int cmp = parseReg(current.checkComparator());
+        int reg = parseReg(current.checkResult());
+        Code newInstruction = new Code(Code.Operation.CMP.ordinal(), cmp, reg, data);
+        code.add(new Code(Code.Operation.LOD.ordinal(), reg, parseReg(current.checkLeft())));
+        code.add(newInstruction);
 
     }
 
-    public static void parseMOV(Atom current){
-
-        System.out.println("MOV detected");
-        // Do things here
-
+    public static void parseMOV(Atom current){ // ~ Brandon
+        int data = parseReg(current.checkRight());
+        int reg = parseReg(current.checkResult());
+        Code newInstruction = new Code(Code.Operation.LOD.ordinal(), reg, data);
+        code.add(newInstruction);
     }
 
     public static int parseReg(String reg){
@@ -154,8 +145,8 @@ public class CodeGen {
 
         // Second, check if the variable name already has an associated register
         if(vars.contains(reg)){
-            return vars.indexOf(reg);
-        } else if (vars.size() != 15){
+            return vars.indexOf(reg) - 1;
+        } else if (vars.size() != 16){
             vars.add(reg);
             return vars.indexOf(reg);
         } else {

@@ -51,8 +51,10 @@ public class Main {
 		// Generate Mini code
 		System.out.println("\nGenerating Mini Architecture code...");
 		CodeGen.generate(atoms);
+		int loc = 0;
+		System.out.println("Loc\tContents");
 		for(Code code : CodeGen.code)
-			System.out.println(code.toString());
+			System.out.println(loc++ + "\t" + code.toString() + "\t" + code.checkOperation());
 		}
     }
 }

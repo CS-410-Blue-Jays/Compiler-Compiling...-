@@ -25,7 +25,7 @@ public class Code {
         return operation + "" + compare + "" + Integer.toHexString(reg)+ "" + addPadding(data);
     }
 
-    // Constructor for the CLR, ADD, SUB, MUL, DIV, LOD, STO instructions
+    // Constructor for the CMP instruction
     public Code(int Operation, int Comparator, int Register, int Data){
         this.operation = Operation;
         this.compare = Comparator;
@@ -33,16 +33,24 @@ public class Code {
         this.data = Data;
     }
 
+    // Constructor for the CLR, ADD, SUB, MUL, DIV, LOD, STO instructions
+    public Code(int Operation, int Register, int Data){
+        this.operation = Operation;
+        this.compare = 0; // No compare
+        this.reg = Register;
+        this.data = Data;
+    }
+
     // Constructor for the JMP instruction
-    public Code(Operation Instruction, int Data){
-        this.operation = getOperation(Instruction);
+    public Code(int Operation, int Data){
+        this.operation = Operation;
         this.compare = this.reg = 0; // No compare or register to store
         this.data = Data; 
     }
 
     // Constructor for the HLT instruction
-    public Code(Operation Instruction){
-        this.operation = getOperation(Instruction);
+    public Code(int Operation){
+        this.operation = Operation;
         this.compare = this.reg = 0; // No compare or register to store
         this.data = 00000; // No data to store
     }
@@ -67,5 +75,9 @@ public class Code {
     // Add left-padding to the data until it has 5 places
     public final String addPadding(int num){
         return String.format("%05d", num);
+    }
+
+    public final String checkOperation(){
+        return Operation.values()[operation].name();
     }
 }
