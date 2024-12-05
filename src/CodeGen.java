@@ -22,6 +22,8 @@ public class CodeGen {
     static ArrayList<Code> code = new ArrayList<>(); // Return this
     static ArrayList<Atom> atoms = new ArrayList<>(); // Input
     static ArrayList<String> vars = new ArrayList<>(); // Register numbers with variable names
+
+    //program counter 100, 104, etc, incremented for each instruction minus lbl jmp, 
     
     static int currLBL = 0;                                       //to track next avail instance of LBL
     static HashMap<String,Integer> labelTable = new HashMap<>();  // Stores labels and values
