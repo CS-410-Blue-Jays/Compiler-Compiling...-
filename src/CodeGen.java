@@ -110,13 +110,13 @@ public class CodeGen {
         
 
         //get next available location
-        int location = 100; //arbitrary example
+        int location = 100; //arbitrary example, need to make global and increment for each instruction
         String label = "LBL" + currLBL++;
 
         //need to create LBL(n) with Location(x) 
         labelTable.put(label, location);
 
-        System.out.println("LABELTABLE NOW CONTAINS: " + label + labelTable.get(label)); //confirmation
+        System.out.println("LABELTABLE NOW CONTAINS: " + label + ", " + labelTable.get(label)); //confirmation
         
     }
 
