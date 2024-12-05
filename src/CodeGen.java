@@ -105,6 +105,15 @@ public class CodeGen {
     }
 
     public static void parseJMP(Atom current){
+        programCounter ++; 
+        /* in case 
+        //JMP 110
+        //LBL 111
+        //EXAMPLE 111
+        //, we want pc to send us to following instruction AFTER the JMP, 
+        so we must increment pc here
+        */
+
         int data = parseReg(current.checkRight()); // Destination
         Code newInstruction = new Code(Code.Operation.JMP.ordinal(), data); // Make the instruction
         code.add(newInstruction);
