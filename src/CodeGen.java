@@ -22,11 +22,12 @@ public class CodeGen {
     static ArrayList<Code> code = new ArrayList<>(); // Return this
     static ArrayList<Atom> atoms = new ArrayList<>(); // Input
     static ArrayList<String> vars = new ArrayList<>(); // Register numbers with variable names
+   
 
-    //program counter with values 100, 104, etc, incremented for each instruction minus lbl jmp, ?
+    //label table
+    static int currLBL = 0;    //track next avail instance of LBL
+    //program counter with values 1,2,3... etc, incremented for each instruction minus lbl jmp, ?
     static int programCounter = 0;
-    
-    static int currLBL = 0;                                       //to track next avail instance of LBL
     static HashMap<String,String> labelTable = new HashMap<>();  // Stores labels and values
 
     public static ArrayList<Code> generate(ArrayList<Atom> insertedAtoms) {
@@ -127,18 +128,19 @@ public class CodeGen {
 
         labelTable.put(label, location);
 
-        System.out.println("Updated Label Table: " + label + " at location: " + labelTable.get(label)); //confirmation
+        System.out.println("\nUpdated Label Table: " + label + " at location: " + labelTable.get(label) ); //confirmation
         
     }
 
     public static void parseTST(Atom current){
         programCounter ++;
 
-        int data = parseReg(current.checkRight());
+        int data = parseReg(current.checkDestination());    //changed from checkRight()
         int cmp = parseReg(current.checkComparator());
         int reg = parseReg(current.checkResult());
+
         Code newInstruction = new Code(Code.Operation.CMP.ordinal(), cmp, reg, data);
-        code.add(new Code(Code.Operation.LOD.ordinal(), reg, parseReg(current.checkLeft())));
+        // code.add(new Code(Code.Operation.LOD.ordinal(), reg, parseReg(current.checkLeft())));
         code.add(newInstruction);
 
     }
@@ -156,7 +158,8 @@ public class CodeGen {
 
         // First, check if it is a variable or a literal
         try {
-            return Integer.parseInt(reg);
+            int x = Integer.parseInt(reg);
+            return x;
         } catch (NumberFormatException e) {}
 
         // Second, check if the variable name already has an associated register
