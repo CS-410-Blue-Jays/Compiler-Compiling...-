@@ -74,6 +74,9 @@ public class CodeGen {
         programCounter ++;
         int data = parseReg(current.checkRight());
         int reg = parseReg(current.checkResult());
+
+        System.out.println("HEX BUG?!?!?! data: " + data +  ", reg: " + reg);
+
         Code newInstruction = new Code(Code.Operation.ADD.ordinal(), reg, data);
         code.add(newInstruction);
     }
@@ -164,7 +167,7 @@ public class CodeGen {
 
         // Second, check if the variable name already has an associated register
         if(vars.contains(reg)){
-            return vars.indexOf(reg) - 1;
+            return vars.indexOf(reg);
         } else if (vars.size() != 16){
             vars.add(reg);
             return vars.indexOf(reg);
