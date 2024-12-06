@@ -103,6 +103,9 @@ public class Atom {
     };
   }
 
+  public int checkComparatorNum(){
+    return this.comparison;
+  }
 
   // Checks the destination of the atom
   public String checkDestination(){

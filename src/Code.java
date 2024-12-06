@@ -1,9 +1,6 @@
 public class Code {
-    // Fields for the Code class
-    private final int operation; // Operation code (0-9)
-    private final int compare; // Compare code (1-6)
-    private final int reg; // Register code (hexadecimal)
-    private final int data; // Data code (decimal memory address)
+
+    private final long code; // The full code (the mini will implement this in 32 bits)
 
     // Possible operations for the Mini architecture (In-order: 0-9)
     public enum Operation {
@@ -22,37 +19,31 @@ public class Code {
     // Need to return a string representation of the Code object
     @Override
     public String toString() {
-        return operation + "" + compare + "" + Integer.toHexString(reg)+ "" + addPadding(data);
+        return Long.toString(code);
+    }
+
+    public String toBinaryString(){
+        return Long.toBinaryString(code);
     }
 
     // Constructor for the CMP instruction
     public Code(int Operation, int Comparator, int Register, int Data){
-        this.operation = Operation;
-        this.compare = Comparator;
-        this.reg = Register;
-        this.data = Data;
+        this.code = Operation * 10000000 + Comparator * 1000000 + Register * 100000 + Data;
     }
 
     // Constructor for the CLR, ADD, SUB, MUL, DIV, LOD, STO instructions
     public Code(int Operation, int Register, int Data){
-        this.operation = Operation;
-        this.compare = 0; // No compare
-        this.reg = Register;
-        this.data = Data;
+        this.code = Operation * 10000000 + Register * 100000 + Data;
     }
 
     // Constructor for the JMP instruction
     public Code(int Operation, int Data){
-        this.operation = Operation;
-        this.compare = this.reg = 0; // No compare or register to store
-        this.data = Data; 
+        this.code = Operation * 10000000 + Data;
     }
 
     // Constructor for the HLT instruction
     public Code(int Operation){
-        this.operation = Operation;
-        this.compare = this.reg = 0; // No compare or register to store
-        this.data = 00000; // No data to store
+        this.code = Operation * 10000000;
     }
 
     // Returns the operation from a passed Operation
@@ -72,12 +63,24 @@ public class Code {
         };
     }
 
+    public final String checkOperation(){
+        return switch (Integer.parseInt(Long.toString(this.code)) / 10000000) {
+            case 0 -> "CLR";
+            case 1 -> "ADD";
+            case 2 -> "SUB";
+            case 3 -> "MUL";
+            case 4 -> "DIV";
+            case 5 -> "JMP";
+            case 6 -> "CMP";
+            case 7 -> "LOD";
+            case 8 -> "STO";
+            case 9 -> "HLT";
+            default -> throw new IllegalArgumentException("Invalid instruction: " + this.code);
+        };
+    }
+
     // Add left-padding to the data until it has 5 places
     public final String addPadding(int num){
         return String.format("%05d", num);
-    }
-
-    public final String checkOperation(){
-        return Operation.values()[operation].name();
     }
 }

@@ -290,7 +290,6 @@ private static boolean isOperator(Token token) {
   // Method to parse initializations ~ Creek
   private static void parseInitialization(){
     // Parse the type
-    Atom init;
     String type = parseType();
 
     // Parse the identifier (result of the initialization)
@@ -308,8 +307,7 @@ private static boolean isOperator(Token token) {
 
     expect(TokenType.SEMICOLON, ";");
 
-    init = new Atom(Atom.Operation.MOV, value, identifier);
-    atoms.add(init);
+    atoms.add(new Atom(Atom.Operation.MOV, value, identifier));
   }
 
   // Method to parse conditional statements - Tucker

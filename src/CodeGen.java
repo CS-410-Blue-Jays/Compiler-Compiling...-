@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashMap;
 
 public class CodeGen {
 
@@ -37,6 +38,10 @@ public class CodeGen {
     }
 
     public static void parseCode(){
+        for(Atom a : atoms){
+            if(a.checkOperator().equals("LBL"))
+                parseAtom();
+        }
         while(hasMoreAtoms())
             parseAtom();
         code.add(new Code(Code.Operation.HLT.ordinal())); // Add the HALT instruction at the end
@@ -73,6 +78,7 @@ public class CodeGen {
     public static void parseADD(Atom current){ // ~ Brandon
         programCounter ++;
         int data = parseReg(current.checkRight());
+        int reg = parseReg(current.checkLeft());
         int reg = parseReg(current.checkResult());
 
         System.out.println("HEX BUG?!?!?! data: " + data +  ", reg: " + reg);
@@ -85,7 +91,7 @@ public class CodeGen {
         programCounter ++;
 
         int data = parseReg(current.checkRight());
-        int reg = parseReg(current.checkResult());
+        int reg = parseReg(current.checkLeft());
         Code newInstruction = new Code(Code.Operation.SUB.ordinal(), reg, data);
         code.add(newInstruction);
     }
@@ -94,7 +100,7 @@ public class CodeGen {
         programCounter ++;
 
         int data = parseReg(current.checkRight());
-        int reg = parseReg(current.checkResult());
+        int reg = parseReg(current.checkLeft());
         Code newInstruction = new Code(Code.Operation.MUL.ordinal(), reg, data);
         code.add(newInstruction);        
     }
@@ -103,7 +109,7 @@ public class CodeGen {
         programCounter ++;
 
         int data = parseReg(current.checkRight());
-        int reg = parseReg(current.checkResult());
+        int reg = parseReg(current.checkLeft());
         Code newInstruction = new Code(Code.Operation.DIV.ordinal(), reg, data);
         code.add(newInstruction);
     }
@@ -145,7 +151,6 @@ public class CodeGen {
         Code newInstruction = new Code(Code.Operation.CMP.ordinal(), cmp, reg, data);
         // code.add(new Code(Code.Operation.LOD.ordinal(), reg, parseReg(current.checkLeft())));
         code.add(newInstruction);
-
     }
 
     public static void parseMOV(Atom current){ // ~ Brandon
@@ -157,6 +162,7 @@ public class CodeGen {
         code.add(newInstruction);
     }
 
+    // Return the register number of the variable, or the literal
     public static int parseReg(String reg){
 
         // First, check if it is a variable or a literal
@@ -168,6 +174,7 @@ public class CodeGen {
         // Second, check if the variable name already has an associated register
         if(vars.contains(reg)){
             return vars.indexOf(reg);
+            return vars.indexOf(reg);
         } else if (vars.size() != 16){
             vars.add(reg);
             return vars.indexOf(reg);
@@ -175,5 +182,13 @@ public class CodeGen {
             // If not, check if there are any available registers
             throw new RuntimeException("No available registers");
         }
+    }
+
+    // Find the destination of a label in the label_table
+    public static int findLocation(String label){
+        if(label_table.containsKey(label))
+            return label_table.get(label);
+        else
+            throw new RuntimeException("Label not found: " + label);
     }
 }
