@@ -1,5 +1,3 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Backend {
@@ -14,7 +12,7 @@ public class Backend {
     public String getFileName(){return fileName;}
     public void setFileName(String fileName){this.fileName = fileName; }
 
-    public static void main(String[] Args)
+    public String execute()
     {
         ArrayList<Atom> atoms = new ArrayList<>(); // create atom list
         FileInputOutput fio = new FileInputOutput();    //allows access to file input and output methods
@@ -32,20 +30,7 @@ public class Backend {
         
         String output_bin_fileName = fio.codeGenBinOutput(fileName, codeList);	//codeGen output to .bin
         
-        // Attempt to execute the MiniVM
-        System.out.println("\nExecuting MiniVM...");
-        try {
-            MiniVM vm = new MiniVM(output_bin_fileName);
-            vm.execute(true, false);
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("I/O error: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Error executing MiniVM: " + e.getMessage());
-        }
-
-        System.exit(1);
+        return output_bin_fileName;
 
     }
 }

@@ -11,13 +11,9 @@ public class Main {
 	// String result = s.nextLine();  // Reads the entire line (string input)
 	
 	
+	CommandUI CUI = new CommandUI();
+	CUI.execute();
 
-
-	Frontend frontend = new Frontend();
-	String atom_output_fileName = frontend.executeFrontend();
-	
-	Backend backend = new Backend(atom_output_fileName);
-	backend.main(args);
 
 	// s.close();
 	} // End of main

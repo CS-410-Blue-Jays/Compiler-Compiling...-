@@ -12,9 +12,11 @@ public class Frontend {
      * Runs everything from user input to atom file output
      * @return fileName of outputted atoms
      */
-    public static String executeFrontend()
+    public String execute()
     {
         
+        System.out.println("HIT");
+
         // Testing out Jframe
         JFrame codeCompiler = new JFrame();
 
@@ -29,7 +31,10 @@ public class Frontend {
         if (returnValue == JFileChooser.APPROVE_OPTION)
             path = fileChooser.getSelectedFile().getAbsolutePath();
         
+
         ArrayList<Token> tokens = new ArrayList<>();
+
+        path = " ";
         File newFile = new File(path);
         String fileName = newFile.getName().substring(0, newFile.getName().lastIndexOf('.'));
 
